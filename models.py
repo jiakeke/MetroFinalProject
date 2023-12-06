@@ -1,4 +1,8 @@
+import random
+
 from mysql import connector
+from geopy.distance import geodesic
+
 import config
 
 
@@ -13,33 +17,39 @@ def get_connection():
     return connection
 
 
-def register_class(model):
-    model.objects = BaseList(model)
-
-
-
 
 class BaseList:
     def __init__(self, model):
         self.model = model
 
     def conditions(self, **kws):
-        keywords = ' and '.join(["%s='%s'" % (k, v) for k, v in kws.items()])
+        keywords = ' AND '.join(["%s='%s'" % (k, v) for k, v in kws.items()])
         return keywords
 
-    def sql_string(self, **kws):
+    def sql_string(self, order_by=None, limit=None, **kws):
         keywords = self.conditions(**kws)
-        sql = "select * from %s where %s;" % (self.model.db_table, keywords)
+        sql = "SELECT * FROM %s WHERE %s" % (self.model.db_table, keywords)
+        if order_by is not None:
+            if order_by in self.model.fields:
+                sql += f' ORDER BY {order_by}'
+            elif order_by == 'random':
+                sql += f' ORDER BY RAND()'
+
+        if isinstance(limit, int):
+            sql += f' LIMIT {limit}'
+
         return sql
 
     def all(self):
         pass
 
     def get(self, **kws):
+        res = self.filter(**kws)
+        return res and res[0] or None
+
+    def count(self, **kws):
         pass
 
-    def count(self, ):
-        pass
 
     def filter(self, **kws):
         sql = self.sql_string(**kws)
@@ -73,6 +83,9 @@ class BaseList:
         cursor = connection.cursor()
         cursor.execute(sql)
         connection.commit()
+        id = cursor.lastrowid
+        print(f'create id: {id}')
+        return self.get(id=id)
 
     def update(self, **kws):
         pass
@@ -81,15 +94,23 @@ class BaseList:
         pass
 
 
+def register_class(model, list_cls=BaseList):
+    model.objects = list_cls(model)
+
+
 class Base:
     db_table = ''
     fields = []
 
     def __init__(self, **kws):
         for key, value in kws.items():
+            clean_method = getattr(self, 'clean_'+key, None)
+            if clean_method:
+                value = clean_method(value)
             setattr(self, key, value)
 
-
+    def save(self):
+        pass
 
 
 class Airport(Base):
@@ -100,6 +121,11 @@ class Airport(Base):
         'scheduled_service', 'gps_code', 'iata_code', 'local_code', 'home_link',
         'wikipedia_link', 'keywords'
     ]
+
+    @property
+    def coordinate(self):
+        return (self.latitude_deg, self.longitude_deg)
+
 
 register_class(Airport)
 
@@ -113,14 +139,6 @@ register_class(Country)
 
 
 
-class Plane(Base):
-    pass
-
-
-register_class(Plane)
-
-
-
 class User(Base):
     db_table = 'users'
     fields = [
@@ -128,13 +146,142 @@ class User(Base):
         'carbon_emission'
     ]
 
+    @property
+    def is_beginner(self):
+        return self.status and True or False
+
+    @property
+    def planes(self):
+        x_planes = User_X_Plane.objects.filter(user_id=self.id)
+        return x_planes
+
+    @property
+    def max_capacity(self):
+        props = [plane.passenger_capacity for plane in self.planes]
+        return max(props)
+
+    @property
+    def max_range(self):
+        props = [plane.flight_range for plane in self.planes]
+        return max(props)
+
+    def get_user_props():
+        """
+        Returns the maximum range and passenger capacity of all planes owned by
+        the player
+        """
+        return self.max_range, self.max_capacity
+
+    @property
+    def current_task(self):
+        task = Task.objects.get(user_id=self.id, is_new=1)
+
+        if not task:
+            if self.is_beginner:
+                departure = Airport.objects.get(ident='EDDB')
+                destination = Airport.objects.get(ident='EDDH')
+                distance = 255.96
+                passenger = 10
+                reward = 1000
+            else:
+                departure, destination = Airport.objects.filter(order_by='random', limit=2)
+                distance = geodesic(departure.coordinate, destination.coordinate).kilometers
+                passenger = random.randint(1, max_capacity + 10)
+                reward = calculate_flight_reward(distance)
+
+            kws = {
+                'user_id': self.id,
+                'departure_id': departure.id,
+                'destination_id': destination.id,
+                'distance': distance,
+                'passenger': passenger,
+                'reward': reward,
+            }
+            task = Task.objects.create(**kws)
+
+        return task
+
+
+
 register_class(User)
 
 
+class Plane(Base):
+    db_table = 'aircraft'
+    fields = [
+        'id', 'name', 'passenger_capacity', 'flight_range', 'price',
+        'carbon_emission', 'image', 'plane_key',
+    ]
+
+    @property
+    def Json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'flight_range': self.flight_range,
+            'passenger': self.passenger_capacity,
+        }
+
+
+register_class(Plane)
+
+
+class User_X_Plane(Base):
+    db_table = 'user_aircraft'
+    fields = [
+        'id', 'user_id', 'aircraft_id'
+    ]
+
+    @property
+    def plane(self):
+        return Plane.objects.get(id=self.aircraft_id)
+
+register_class(User_X_Plane)
+
+
+class Task(Base):
+    db_table = 'tasks'
+    fields = [
+        'id', 'user_id', 'departure_id', 'destination_id', 'distance',
+        'passenger', 'reward', 'is_new',
+    ]
+
+    @property
+    def user(self):
+        if self.user_id:
+            return User.objects.get(id=self.user_id)
+
+    @property
+    def departure(self):
+        if self.departure_id:
+            return Airport.objects.get(id=self.departure_id)
+
+    @property
+    def destination(self):
+        if self.destination_id:
+            return Airport.objects.get(id=self.destination_id)
+
+    @property
+    def Json(self):
+        return {
+            'departure_name': self.departure.name,
+            'destination_name': self.destination.name,
+            'distance': self.distance,
+            'passenger': self.passenger,
+            'reward': self.reward,
+        }
+
+    def play(self):
+        pass
+
+
+class TaskList(BaseList):
+    pass
+
+
+register_class(Task, TaskList)
 
 if __name__ == '__main__':
-    airports = Airport.objects.filter(iso_country='FI')
-    for airport in airports:
-        print(airport.name)
-    print(len(airports))
+    pass
+
 

@@ -13,6 +13,7 @@ site_host = 'localhost'
 site_port = 8888
 
 jwt_secret_key = 'Please Modify the Secret Key in local_config.py'
+map_api_key = 'Please Modify the Map API Key in local_config.py'
 
 # Load the local variables from config.py
 if os.path.exists('local_config.py'):

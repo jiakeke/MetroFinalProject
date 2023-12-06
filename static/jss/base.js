@@ -1,20 +1,34 @@
 'use strict';
 
-const token_name = 'p_token';
-
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+async function is_authenticated() {
+    const response = await fetch('/is_authenticated', {
+        method: 'GET',
+        }
+    );
+    const result = await response.json();
+    if (response.status == 200) {
+        document.querySelector('nav').style.display = 'block';
+        document.querySelector('section').style.display = 'block';
+    } else {
+        document.querySelector('#login_dialog').showModal()
+    }
 }
 
-function is_logged_in(){
-    const auth_token = localStorage.getItem(token_name);
-    if (auth_token == null || auth_token === 'undefined') {
-        return false;
-    } else {
-        return true;
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  console.log(ca);
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
     }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -95,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     dialog.appendChild(login_form);
     dialog.appendChild(error_msg);
-    section.appendChild(dialog);
+    header.appendChild(dialog);
 
     login.addEventListener(
         'click',
@@ -110,9 +124,9 @@ document.addEventListener("DOMContentLoaded", function() {
             );
             const result = await response.json();
             if (response.status == 200) {
-                localStorage.setItem(token_name, result.access_token);
                 dialog.close();
-                document.querySelector('#main').style.display = 'block';
+                document.querySelector('section').style.display = 'block';
+                document.querySelector('nav').style.display = 'block';
                 document.querySelector('#error_msg').innerHTML = '';
             } else {
                 document.querySelector('#error_msg').innerHTML = result.msg;
@@ -133,9 +147,9 @@ document.addEventListener("DOMContentLoaded", function() {
             );
             const result = await response.json();
             if (response.status == 200) {
-                localStorage.setItem(token_name, result.access_token);
                 dialog.close();
-                document.querySelector('#main').style.display = 'block';
+                document.querySelector('section').style.display = 'block';
+                document.querySelector('nav').style.display = 'block';
                 document.querySelector('#error_msg').innerHTML = '';
             } else {
                 document.querySelector('#error_msg').innerHTML = result.msg;
@@ -145,88 +159,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Authorization Dialog End
 
-    // Main Section Begin
-    const main = Object.assign(
-        document.createElement('div'),
-        {
-            id: 'main',
-        }
-    );
-    main.style.display = 'none';
-
-
-    const menu_game = Object.assign(
-        document.createElement('button'),
-        {
-            id: 'game',
-            type: 'button',
-            innerHTML: 'Game',
-        }
-    );
-
-    main.appendChild(menu_game);
-
-
-    const menu_store = Object.assign(
-        document.createElement('button'),
-        {
-            id: 'store',
-            type: 'button',
-            innerHTML: 'Store',
-        }
-    );
-
-    main.appendChild(menu_store);
-
-    const menu_gallery = Object.assign(
-        document.createElement('button'),
-        {
-            id: 'gallery',
-            type: 'button',
-            innerHTML: 'Gallery',
-        }
-    );
-
-    main.appendChild(menu_gallery);
-
-    const menu_ranking = Object.assign(
-        document.createElement('button'),
-        {
-            id: 'ranking',
-            type: 'button',
-            innerHTML: 'Ranking',
-        }
-    );
-
-    main.appendChild(menu_ranking);
-
-    const logout = Object.assign(
-        document.createElement('button'),
-        {
-            id: 'logout',
-            type: 'button',
-            innerHTML: 'Logout',
-        }
-    );
-
-    logout.addEventListener(
-        'click',
-        function(event) {
-            localStorage.removeItem(token_name);
-            main.style.display = 'none';
-            document.querySelector('#login_dialog').showModal()
-        }
-    );
-
-    main.appendChild(logout);
-
-    section.appendChild(main);
-
-    // Main Section End
-
-    if (is_logged_in()) {
-        document.querySelector('#main').style.display = 'block';
-    } else {
-        document.querySelector('#login_dialog').showModal()
-    }
+    is_authenticated();
 });
