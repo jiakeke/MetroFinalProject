@@ -291,16 +291,25 @@ const menu_items = [
         id: 'store',
         name: 'Store',
         method: null,
+        render: async function store_render() {
+            // Here is the function to render the store channelel
+        },
     },
     {
         id: 'gallery',
         name: 'Gallery',
         method: null,
+        render: async function gallery_render() {
+            // Here is the function to render the gallery channelel
+        },
     },
     {
         id: 'ranking',
         name: 'Ranking',
         method: null,
+        render: async function ranking_render() {
+            // Here is the function to render the ranking channelel
+        },
     },
     {
         id: 'logout',
