@@ -11,12 +11,14 @@ const menu_items = [
         id: 'game',
         name: 'Game',
         method: null,
-        render: async function() {
+        render: async function game_render() {
             const response = await fetch('/game', {
                 method: 'GET',
                 }
             );
             const result = await response.json();
+            const map_img = new Image();
+            map_img.src = result.map_info[0];
             console.log(result);
             const game_section = document.querySelector('#game_section');
             game_section.innerHTML = '';
@@ -25,18 +27,30 @@ const menu_items = [
                 'reward',
             ]
 
-            for (let field of fields) {
+            for (let field of result.task) {
 
                 game_section.appendChild(
                     Object.assign(
                         document.createElement('div'),
                         {
-                            id: `${field}`,
-                            innerHTML: `${field}: ${result.task[field]}`,
+                            id: `${field[0]}`,
+                            innerHTML: `${field[1]}: ${field[2]}`,
                         }
                     )
                 );
             }
+
+            game_section.appendChild(document.createElement('br'));
+            game_section.appendChild(
+                Object.assign(
+                    document.createElement('div'),
+                    {
+                        id: 'tips',
+                        innerHTML: 'Tips:<br>Destination weather may affect flight costs.<br> Refuel cost is 50 coins each time.',
+                    }
+                )
+            );
+
 
             game_section.appendChild(document.createElement('br'));
             game_section.appendChild(
@@ -105,7 +119,7 @@ const menu_items = [
             flight_form.appendChild(launch);
             launch.addEventListener(
                 'click',
-                async function(event) {
+                async function game_play(event) {
                     const plane = document.querySelector('input[name="plane"]:checked').value;
                     const response = await fetch('/game/play', {
                         method: 'POST',
@@ -120,21 +134,153 @@ const menu_items = [
                             document.createElement('dialog'),
                             {
                                 id: 'game_dialog',
+                                    style: `background-image: url(${result.map_info[0]})`,
                             }
                         );
                         game_section.appendChild(game_dialog);
                         game_dialog.appendChild(
                             Object.assign(
-                                document.createElement('img'),
+                                document.createElement('canvas'),
                                 {
-                                    id: 'game_map',
-                                    src: result.map_url,
-                                    width: 1000,
-                                    height: 800,
+                                    id: 'game_playing',
+                                    width: 1024,
+                                    height: 768,
                                 }
                             )
-                        )
+                        );
+
+                        const ax = result.map_info[1][0];
+                        const ay = result.map_info[1][1];
+                        const bx = result.map_info[2][0];
+                        const by = result.map_info[2][1];
+                        /*
+                        // Drawing line start
+                        const canvas = document.getElementById("game_playing");
+                        if(canvas.getContext){
+                            var ctx = canvas.getContext("2d");
+                            ctx.beginPath();
+                            ctx.moveTo(ax, ay);
+                            ctx.lineTo(bx, by);
+                            ctx.strokeStyle = "red";
+                            ctx.lineWidth = 10;
+                            ctx.lineCap = 'round'; //square, round, butt
+                            ctx.stroke();
+                            ctx.closePath();
+                        }
+                        //Drawing line end
+                        */
+                        const plane_img = Object.assign(
+                            document.createElement('img'),
+                            {
+                                id: 'plane_img',
+                                src: '/static/imgs/plane_left.webp',
+                                width: 80,
+                                height: 80,
+                                style: `position: absolute; left:
+                                ${result.map_info[1][0]-20}px; top:
+                                ${result.map_info[1][1]-20}px`,
+                            }
+                        );
+
+                        game_dialog.appendChild(plane_img);
+
+                        let img_width = plane_img.width;
+                        let img_height = plane_img.height;
+                        let delta_x = (bx-ax)/20;
+                        let delta_y = delta_x*(by-ay)/(bx-ax);
+
+                        if (ax > bx) {
+                            plane_img.src = '/static/imgs/plane_right.webp';
+                        }
+                        //let current = 90;
+                        //plane_img.style.transform = 'rotate('+current+'deg)';
+                        
+                        
+                        function flying() {
+                            let new_x = plane_img.offsetLeft;
+                            let new_y = plane_img.offsetTop;
+
+                            let distance_x = Math.abs(bx - new_x)
+                            let distance_y = Math.abs(by - new_y)
+
+                            if (distance_x <= Math.abs(delta_x)) {
+                                plane_img.style.left = `${bx-img_width/2}px`;
+                                plane_img.style.top = `${by-img_height/2}px`;
+                                game_dialog.close();
+                            } else {
+                                plane_img.style.left = `${new_x + delta_x}px`;
+                                plane_img.style.top = `${new_y + delta_y}px`;
+                                setTimeout(flying, 300);
+                            }
+
+                        }
+                        // Show Map Dialog
                         game_dialog.showModal();
+                        flying();
+                        const skip = Object.assign(
+                            document.createElement('button'),
+                            {
+                                id: 'flying_skip',
+                                type: 'button',
+                                innerHTML: 'Skip',
+                                style: "position: absolute; left: 900px; top: 30px;",
+                            }
+                        )
+                        skip.addEventListener(
+                            'click',
+                            function(){
+                                game_dialog.close()
+                            }
+                        );
+                        game_dialog.appendChild(skip);
+                        // Report start
+
+                        let report = Object.assign(
+                            document.createElement('div'),
+                            {
+                                id: 'game_report',
+                                width: 300,
+                                height: 200,
+                            }
+                        );
+                            
+                        let status = Object.assign(
+                            document.createElement('h3'),
+                            {
+                                id: 'status',
+                                innerHTML: result.report.status,
+                            }
+                        );
+                        report.appendChild(status);
+
+                        console.log(result.report.msgs);
+                        for (let msg of result.report.msgs) {
+                            let msg_p = Object.assign(
+                                document.createElement('p'),
+                                {
+                                    id: 'message',
+                                    innerHTML: msg,
+                                }
+                            )
+                        report.appendChild(msg_p);
+                        }
+
+                        const report_confirm = Object.assign(
+                            document.createElement('button'),
+                            {
+                                id: 'report_confirm',
+                                type: 'button',
+                                innerHTML: 'OK',
+                            }
+                        )
+                        report_confirm.addEventListener(
+                            'click',
+                            game_render
+                        );
+                        report.appendChild(report_confirm);
+                        game_section.appendChild(report);
+                        // Report end
+
                     }
                 }
             );

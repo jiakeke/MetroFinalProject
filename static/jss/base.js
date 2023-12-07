@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const password = Object.assign(
         document.createElement('input'),
         {
-            type: 'text',
+            type: 'password',
             id: 'password',
             name: 'password',
             placeholder: 'Enter Password',

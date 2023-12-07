@@ -30,7 +30,15 @@ body {
 #game_dialog {
     top: 20px;
     left: 200px;
+    width: 1024px;
+    height: 768px;
 }
+
+#game_dialog#game_preview {
+    width: 1024px;
+    height: 768px;
+}
+
 
 input,  button {
     border: solid 1px black;
@@ -51,5 +59,15 @@ button.selected {
 .channel {
     background-color: #EFEFEF;
     padding: 10px;
+
+}
+
+#game_report {
+    position: absolute;
+    background-color: #EFEFEF;
+    left: 400px;
+    top: 400px;
+    border: solid 1px black;
+    padding: 5px;
 
 }

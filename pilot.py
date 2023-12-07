@@ -13,8 +13,9 @@ Common Commands:
 
 import os, sys
 import json
-from datetime import datetime, timezone, timedelta
 import math
+import random
+from datetime import datetime, timezone, timedelta
 from geopy.distance import geodesic
 from flask import Flask, request, jsonify
 from flask import render_template
@@ -41,16 +42,48 @@ program = os.path.basename(sys.argv[0])
 app = Flask(__name__)
 
 #========================= Common Misc Functions ==========================
-def calculate_flight_reward(distance):
+
+def get_weather_index(latitude):
+    weather_setting = {
+        1: ('Normal', 1.0),
+        2: ('Great Weather', 0.9),
+        3: ('Heavy Rain', 1.1),
+        4: ('Blizzard', 1.3),
+        5: ('Snow', 1.2),
+        6: ('Thunderstorm', 1.2)
+    }
+    if latitude == "tutorial":
+        return weather_setting[1]
+    weather_index = weather_setting[1]
+    if random.random() <= 0.20:
+        weather_index = weather_setting[2]
+    elif random.random() >= 0.80:
+        weather_index = weather_setting[3]
+    elif latitude >= 60 and random.random() <= 0.05:
+        weather_index = weather_setting[4]
+    elif latitude >= 40 and random.random() <= 0.10:
+        weather_index = weather_setting[5]
+    elif latitude <= 30 and random.random() <= 0.15:
+        weather_index = weather_setting[6]
+    return weather_index
+
+
+def calculate_carbon_emission(distance):
     """
     Calculate the carbon emission based on the given distance.
     """
     if distance <= 200:
-        emission = distance * 0.275
+        return distance * 0.275
     elif 200 < distance <= 1000:
-        emission = 55 + 0.105 * (distance - 200)
+        return 55 + 0.105 * (distance - 200)
     else:
-        emission = distance * 0.139
+        return distance * 0.139
+
+def calculate_flight_reward(distance):
+    """
+    Calculate the reward based on the given distance.
+    """
+    emission = calculate_carbon_emission(distance)
 
     carbon_cost = emission * 1.3
     fuel_cost = distance * 2.5
@@ -59,53 +92,54 @@ def calculate_flight_reward(distance):
     return reward
 
 def get_map(task):
-    marker_a = {
-        'lon': task.departure.longitude_deg,
-        'lat': task.departure.latitude_deg,
-        'text': 'A',
-    }
-    marker_b = {
-        'lon': task.destination.longitude_deg,
-        'lat': task.destination.latitude_deg,
-        'text': 'B',
-    }
-    center = {
-        'lon': (marker_a['lon']+marker_b['lon'])/2,
-        'lat': (marker_a['lat']+marker_b['lat'])/2,
-    }
+    ax = task.departure.longitude_deg
+    ay = task.departure.latitude_deg
+    a_txt = 'A'
+
+    bx = task.destination.longitude_deg
+    by = task.destination.latitude_deg
+    b_txt = 'B'
+
+    cx = (ax + bx)/2
+    cy = (ay + by)/2
+
+
     distance = geodesic(
-        (marker_a['lat'], marker_a['lon']),
-        (marker_b['lat'], marker_b['lon'])
+        (ay, ax),
+        (by, bx)
     ).kilometers
-    zoom = 14.5 - math.log(distance, 2) #6.2
+
+    zoom = 14.5 - math.log(distance, 2)
+
+    px_x = (360 / (2 ** (zoom - 1))) / 1024
+    px_y = (math.pi / (2 ** (zoom - 1))) / 768
 
     url =(
         f"https://maps.geoapify.com/v1/staticmap"
         f"?apiKey={config.map_api_key}"
-        f"&style=klokantech-basic&width=1000&height=800"
-        f"&center=lonlat:{center['lon']},{center['lat']}&zoom={zoom}"
+        f"&style=klokantech-basic&width=1024&height=768"
+        f"&center=lonlat:{cx},{cy}&zoom={zoom}"
         f"&marker="
-        f"lonlat:{marker_a['lon']},{marker_a['lat']};text:{marker_a['text']};"
+        f"lonlat:{ax},{ay};text:{a_txt};"
         f"color:%23ff0000;size:large;textsize:small|"
-        f"lonlat:{marker_b['lon']},{marker_b['lat']};text:{marker_b['text']};"
+        f"lonlat:{bx},{by};text:{b_txt};"
         f"color:%23ff0000;size:large;textsize:small"
     )
-    return url
+
+    ay = math.radians(ay)
+    by = math.radians(by)
+    cy = math.radians(cy)
+
+    ax_px = round((ax - cx)/px_x + 512)
+    ay_px = round((cy - ay)/px_y + 384)
+
+    bx_px = round((bx - cx)/px_x + 512)
+    by_px = round((cy - by)/px_y + 384)
+
+    print(ax_px, bx_px)
+    return url, (ax_px, ay_px), (bx_px, by_px)
 
 #========================= Flask API View  ==================================
-
-
-@app.route("/airport/<id>")
-def airport(icao):
-    airports = Airport.objects.random(continent='EU', limit=2)
-    if len(airports) > 0:
-        context = {
-            'ICAO': icao,
-            'Name': airports[0]['name'],
-            'Location':airports[0]['municipality']
-        }
-        return context
-    return {'ICAO': icao, 'Status': 'Not Found'}
 
 
 @app.route("/game")
@@ -115,6 +149,7 @@ def game():
     task = user.current_task
     context = {
         'task': task.Json,
+        'map_info': get_map(task),
         'planes': [plane.plane.Json for plane in user.planes],
     }
 
@@ -127,11 +162,14 @@ def game_play():
     user = User.objects.get(name=get_jwt_identity())
     plane_id = request.json.get("plane", None)
     task = user.current_task
+    plane = Plane.objects.get(id=plane_id)
     context = {
         'task': task.Json,
-        'plane': Plane.objects.get(id=plane_id).Json,
-        'map_url': get_map(task),
+        'plane': plane.Json,
+        'map_info': get_map(task),
+        'report': task.play(plane),
     }
+    print(context['report'])
 
     return context
 
@@ -177,13 +215,9 @@ def register():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     user = User.objects.create(name=username, password=hashed_password)
 
-    #access_token = create_access_token(identity=username)
-    #response = {"access_token":access_token}
     access_token = create_access_token(identity=username)
     refresh_token = create_refresh_token(identity=username)
     response = jsonify({'register': True})
-    #response.set_cookie('access_token', access_token)
-    #response.set_cookie('refresh_token', refresh_token)
     set_access_cookies(response, access_token)
     set_refresh_cookies(response, refresh_token)
     default_plane = Plane.objects.get(plane_key='sky_hawk_100')
@@ -210,7 +244,6 @@ def login():
     access_token = create_access_token(identity=username)
     refresh_token = create_refresh_token(identity=username)
     response = jsonify({'login': True})
-    #{"access_token":access_token}
     set_access_cookies(response, access_token)
     set_refresh_cookies(response, refresh_token)
     return response

@@ -53,6 +53,7 @@ class BaseList:
 
     def filter(self, **kws):
         sql = self.sql_string(**kws)
+        print(sql)
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute(sql)
@@ -87,8 +88,21 @@ class BaseList:
         print(f'create id: {id}')
         return self.get(id=id)
 
-    def update(self, **kws):
-        pass
+    def update(self, id, **kws):
+        statements = []
+        for key, value in kws.items():
+            statements.append(f"{key}='{value}'")
+
+        sql = (
+            f"UPDATE {self.model.db_table} "
+            f"SET {','.join(statements)} "
+            f"WHERE id={id}"
+        )
+        print(sql)
+        connection = get_connection()
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        connection.commit()
 
     def delete(self, **kws):
         pass
@@ -157,12 +171,12 @@ class User(Base):
 
     @property
     def max_capacity(self):
-        props = [plane.passenger_capacity for plane in self.planes]
+        props = [plane.plane.passenger_capacity for plane in self.planes]
         return max(props)
 
     @property
     def max_range(self):
-        props = [plane.flight_range for plane in self.planes]
+        props = [plane.plane.flight_range for plane in self.planes]
         return max(props)
 
     def get_user_props():
@@ -174,19 +188,23 @@ class User(Base):
 
     @property
     def current_task(self):
+        from pilot import calculate_flight_reward
         task = Task.objects.get(user_id=self.id, is_new=1)
 
         if not task:
             if self.is_beginner:
                 departure = Airport.objects.get(ident='EDDB')
                 destination = Airport.objects.get(ident='EDDH')
-                distance = 255.96
                 passenger = 10
                 reward = 1000
-            else:
-                departure, destination = Airport.objects.filter(order_by='random', limit=2)
                 distance = geodesic(departure.coordinate, destination.coordinate).kilometers
-                passenger = random.randint(1, max_capacity + 10)
+                print(distance)
+            else:
+                departure, destination = Airport.objects.filter(
+                    order_by='random', limit=2, continent='EU')
+
+                passenger = random.randint(1, self.max_capacity + 10)
+                distance = geodesic(departure.coordinate, destination.coordinate).kilometers
                 reward = calculate_flight_reward(distance)
 
             kws = {
@@ -263,16 +281,76 @@ class Task(Base):
 
     @property
     def Json(self):
-        return {
-            'departure_name': self.departure.name,
-            'destination_name': self.destination.name,
-            'distance': self.distance,
-            'passenger': self.passenger,
-            'reward': self.reward,
-        }
+        return [
+            ['departure_name', 'Departure Name', self.departure.name],
+            ['destination_name', 'Destination Name', self.destination.name],
+            ['distance', 'Distance', self.distance],
+            ['passenger', 'Passenger', self.passenger],
+            ['reward', 'Reward', self.reward],
+        ]
 
-    def play(self):
-        pass
+    def play(self, plane):
+        from pilot import calculate_carbon_emission
+        from pilot import get_weather_index
+        distance = self.distance
+        carbon_coefficient = plane.carbon_emission
+        carbon_emission = calculate_carbon_emission(distance)
+
+        carbon_cost = carbon_emission * carbon_coefficient
+        fuel_cost = distance * 2.2
+        if self.user.is_beginner:
+            latitude = "tutorial"
+        else:
+            latitude = self.destination.latitude_deg
+
+        weather_index = get_weather_index(latitude)
+        total_cost = (fuel_cost + carbon_cost) * weather_index[1]
+
+        User.objects.update(self.user.id, carbon_emission=self.user.carbon_emission+carbon_emission)
+        User.objects.update(self.user.id, status=0)
+        Task.objects.update(self.id, is_new=0)
+
+        refuel_cost = 0
+        refuel_times = 0
+        if distance > self.user.max_range:
+            refuel_times = int(distance / self.user.max_range)
+            refuel_cost = 50 * refuel_times
+            total_cost += refuel_cost
+
+        if self.passenger > self.user.max_capacity:
+            result = {
+                'status': 'Mission Fail!',
+                'msgs': ["The number of passengers exceeds your plane's capacity."],
+            }
+            return result
+
+        total_income = round(self.reward - total_cost, 1)
+        if total_income > 0:
+            self.user.objects.update(
+                self.user.id,
+                balance=self.user.balance+total_income,
+                total_amount=self.user.total_amount+total_income
+            )
+        else:
+            result = {
+                'status': 'Mission Fail!',
+                'msgs': ["Your cost is larger than profit."],
+            }
+            return result
+
+        result = {'status': 'Mission Successful', 'msgs': []}
+        if refuel_cost:
+            result['msgs'].append(
+                f"You had to refuel {refuel_times} times during your trip. "
+                f"This cost an additional {refuel_cost} coins.")
+
+        result['msgs'].append(
+            f"You encountered {weather_index[0]} weather "
+            f"at your destination airport")
+        result['msgs'].append(
+            f"Task successful!\nYou earned: {total_income:.1f}\n"
+            f"Total cost was: {total_cost:.1f}\n")
+        return result
 
 
 class TaskList(BaseList):
