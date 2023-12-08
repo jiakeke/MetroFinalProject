@@ -316,6 +316,16 @@ const menu_items = [
               image_container.showModal();
             })
 
+            const buyButton = document.createElement('button');
+            buyButton.innerHTML = 'Purchase';
+            buyButton.addEventListener('click', async function() {
+              const response = await fetch(`/store/buy/${plane.id}`, {
+                method: 'POST',
+              });
+              const result = await response.json();
+              alert(result.message);
+            })
+
             planeImg.addEventListener('click', function() {
               image_container.close();
             })
@@ -325,8 +335,12 @@ const menu_items = [
             `;
 
             planeDiv.appendChild(showImageButton);
+            planeDiv.appendChild(buyButton);
             store_section.appendChild(planeDiv);
-        });
+          });
+          const user_info = document.createElement('p');
+          user_info.innerHTML = `Current user: ${result.user.name}, balance: ${result.user.balance}`;
+          store_section.appendChild(user_info);
         },
     },
     {
