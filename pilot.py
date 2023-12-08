@@ -272,7 +272,7 @@ def buy_plane(plane_id):
 
     if user.balance >= plane.price:
         user.balance -= plane.price
-        user.save()
+        User.objects.update(user.id, balance=user.balance)
 
         User_X_Plane.objects.create(user_id=user.id, aircraft_id=plane.id)
 

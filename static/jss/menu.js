@@ -299,6 +299,20 @@ const menu_items = [
           const result = await response.json();
           const store_section = document.querySelector('#store_section');
           store_section.innerHTML = '';
+          const user_info = document.createElement('p');
+          user_info.setAttribute('id', 'user_info');
+          user_info.innerHTML = `Current user: ${result.user.name}, balance: ${result.user.balance}`;
+          store_section.appendChild(user_info);
+
+          function updateUserBalance() {
+            fetch('/store')
+              .then(response => response.json())
+              .then(data => {
+                const user_info = document.querySelector('#user_info'); // 假设您有一个显示用户信息的元素
+                user_info.innerHTML = `Current user: ${data.user.name}, balance: ${data.user.balance}`;
+              });
+          }
+
           result.planes.forEach(plane => {
             const planeDiv = document.createElement('div');
             planeDiv.className = 'plane';
@@ -324,6 +338,9 @@ const menu_items = [
               });
               const result = await response.json();
               alert(result.message);
+              if (result.status === 'success') {
+                updateUserBalance();
+              }
             })
 
             planeImg.addEventListener('click', function() {
@@ -338,9 +355,6 @@ const menu_items = [
             planeDiv.appendChild(buyButton);
             store_section.appendChild(planeDiv);
           });
-          const user_info = document.createElement('p');
-          user_info.innerHTML = `Current user: ${result.user.name}, balance: ${result.user.balance}`;
-          store_section.appendChild(user_info);
         },
     },
     {
