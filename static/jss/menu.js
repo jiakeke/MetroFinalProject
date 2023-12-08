@@ -363,6 +363,40 @@ const menu_items = [
         method: null,
         render: async function gallery_render() {
             // Here is the function to render the gallery channelel
+            const response = await fetch('/gallery', {method:
+            'GET'},);
+            const result = await response.json()
+            const gallery_section = document.querySelector('#gallery_section');
+            gallery_section.innerHTML = '';
+            result.planes.forEach(plane => {
+                const planeDiv = document.createElement('div');
+                planeDiv.className = 'plane';
+
+                const image_container = document.createElement('dialog');
+                const planeImg = document.createElement('img');
+                planeImg.src = plane.img;
+                planeImg.alt = plane.name;
+                image_container.appendChild(planeImg);
+                gallery_section.appendChild(image_container)
+
+                const showImageButton = document.createElement('button');
+                showImageButton.innerHTML = 'Show Plane Image';
+                showImageButton.addEventListener('click', function (){
+                    image_container.showModal();
+                })
+
+                planeImg.addEventListener('click', function () {
+                    image_container.close();
+                })
+                planeDiv.innerHTML = `
+                <h3>${plane.name}</h3>
+                <p>Range: ${plane.flight_range}, Price: ${plane.price}</p>
+            `;
+
+                planeDiv.appendChild(showImageButton)
+                gallery_section.appendChild(planeDiv)
+
+            })
         },
     },
     {
