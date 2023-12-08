@@ -326,7 +326,10 @@ const menu_items = [
 
             planeDiv.appendChild(showImageButton);
             store_section.appendChild(planeDiv);
-        });
+          });
+          const user_info = document.createElement('p');
+          user_info.innerHTML = `Current user: ${result.user.name}, balance: ${result.user.balance}`;
+          store_section.appendChild(user_info);
         },
     },
     {
