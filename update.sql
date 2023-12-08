@@ -19,31 +19,31 @@ create table tasks (
 );
 
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_1'
+set aircraft.image = '\/static\/imgs\/flight_1.png'
 where id = 1;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_2'
+set aircraft.image = '\/static\/imgs\/flight_2.png'
 where id = 2;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_3'
+set aircraft.image = '\/static\/imgs\/flight_3.png'
 where id = 3;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_4'
+set aircraft.image = '\/static\/imgs\/flight_4.png'
 where id = 4;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_5'
+set aircraft.image = '\/static\/imgs\/flight_5.png'
 where id = 5;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_6'
+set aircraft.image = '\/static\/imgs\/flight_6.png'
 where id = 6;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_7'
+set aircraft.image = '\/static\/imgs\/flight_7.png'
 where id = 7;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_8'
+set aircraft.image = '\/static\/imgs\/flight_8.png'
 where id = 8;
 update aircraft
-set aircraft.image = '\/static\/imgs\/flight_9'
+set aircraft.image = '\/static\/imgs\/flight_9.png'
 where id = 9;
 alter table aircraft
 modify column image varchar(128);
