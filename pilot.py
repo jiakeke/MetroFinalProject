@@ -259,7 +259,7 @@ def store():
         "balance": user.balance
     }
     planes_data = [plane.Json for plane in planes]
-    return {"user": user_data, "planes":planes_data}
+    return {"user": user_data, "planes": planes_data}
 
 @app.route("/store/buy/<plane_id>", methods=["POST"])
 @jwt_required()
@@ -279,6 +279,21 @@ def buy_plane(plane_id):
         return {"status": "success", "message": "Plane purchased successfully."}
     else:
         return {"status": "failure", "message": "Insufficient balance."}
+
+@app.route("/gallery")
+@jwt_required()
+def gallery():
+    user = User.objects.get(name=get_jwt_identity())
+    planes = User_X_Plane.objects.filter(user_id=user.id)
+    user_data = {
+        "id": user.id,
+        "name": user.name
+    }
+    planes_data = [
+        plane.plane.Json
+        for plane in planes
+    ]
+    return {"user": user_data, "planes": planes_data}
 
 
 @app.route("/logout", methods=["GET", "POST"])
