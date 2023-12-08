@@ -248,6 +248,20 @@ def login():
     set_refresh_cookies(response, refresh_token)
     return response
 
+@app.route("/store")
+@jwt_required()
+def store():
+    user = User.objects.get(name=get_jwt_identity())
+    planes = Plane.objects.filter()
+    user_data = {
+        "id": user.id,
+        "name": user.name,
+        "balance": user.balance
+    }
+    planes_data = [plane.Json for plane in planes]
+    return {"user": user_data, "planes":planes_data}
+
+
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})

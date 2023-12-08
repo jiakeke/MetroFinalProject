@@ -239,6 +239,8 @@ class Plane(Base):
             'id': self.id,
             'name': self.name,
             'flight_range': self.flight_range,
+            'price': self.price,
+            'img': self.image,
             'passenger': self.passenger_capacity,
         }
 
