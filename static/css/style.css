@@ -6,6 +6,7 @@
     font-size:100%;
 }
 
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -13,11 +14,67 @@
 body {
     max-width: 1200px;
     margin: auto;
-    background: #C9EFC7;
+    background: #f6f0df;
     align-items: center;
     font-family: 'Poppins', sans-serif;
+    color: #072c44;
     font-size: 16px;
 
+}
+
+header {
+    font-size: 35px;
+    background-color: #46c0a6;
+}
+
+nav button {
+    background-color: #46c0a6;
+    color: #ffffff;
+    border: 3px #eef3ea solid;
+    font-family: 'Silkscreen', sans-serif;
+    justify-content: center;
+}
+
+nav button:hover {
+    background-color: #ffe26a;
+    color: #16123f;
+}
+
+
+
+section img {
+    width: 40%;
+    height: auto;
+}
+
+section {
+
+    font-size: 20px;
+}
+
+#game_section {
+    background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
+}
+
+#store_section {
+    background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
+    font-size: 25px;
+}
+
+#gallery_section {
+    background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
+}
+
+#ranking_section {
+    background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
 }
 
 #login_dialog {
@@ -25,6 +82,19 @@ body {
     left: 200px;
     border: solid 1px black;
     padding: 20px;
+}
+
+div button {
+    background-color: #46c0a6;
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 25px;
+    color: #ffffff;
+    border: 3px #eef3ea solid;
+}
+
+div button:hover {
+    background-color: #ffe26a;
+    color: #16123f;
 }
 
 #game_dialog {
@@ -37,6 +107,10 @@ body {
 #game_dialog#game_preview {
     width: 1024px;
     height: 768px;
+}
+
+section dialog {
+
 }
 
 
