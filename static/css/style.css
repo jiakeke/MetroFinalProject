@@ -6,6 +6,7 @@
     font-size:100%;
 }
 
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -13,12 +14,65 @@
 body {
     max-width: 1200px;
     margin: auto;
-    background: #C9EFC7;
+    background: #f6f0df;
     align-items: center;
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
 
 }
+
+header {
+    font-size: 25px;
+    background-color: #46c0a6;
+}
+
+nav button {
+    background-color: #46c0a6;
+    color: #ffffff;
+    border: 3px #eef3ea solid;
+    font-family: 'Silkscreen', sans-serif;
+}
+
+nav button:hover {
+    background-color: #ffe26a;
+    color: #16123f;
+}
+
+
+
+section img {
+    width: 40%;
+    height: auto;
+}
+
+section {
+
+    font-size: 20px;
+}
+
+#game_section {
+    background-color: #b0d387;
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
+}
+
+#store_section {
+    background-color: #b0d387;
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
+}
+
+#gallery_section {
+    background-color: #b0d387;
+    border: 5px #eef3ea solid;
+    border-radius: 10px;
+}
+
+dialog {
+
+}
+
+
 
 #login_dialog {
     top: 200px;
