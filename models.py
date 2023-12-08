@@ -23,8 +23,10 @@ class BaseList:
         self.model = model
 
     def conditions(self, **kws):
-        keywords = ' AND '.join(["%s='%s'" % (k, v) for k, v in kws.items()])
-        conditions = ' WHERE ' + keywords
+        conditions = ''
+        if kws:
+            keywords = ' AND '.join(["%s='%s'" % (k, v) for k, v in kws.items()])
+            conditions = ' WHERE ' + keywords
         return conditions
 
     def sql_string(self, order_by=None, limit=None, **kws):
