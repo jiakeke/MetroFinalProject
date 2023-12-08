@@ -24,11 +24,11 @@ class BaseList:
 
     def conditions(self, **kws):
         keywords = ' AND '.join(["%s='%s'" % (k, v) for k, v in kws.items()])
-        return keywords
+        conditions = ' WHERE ' + keywords
+        return conditions
 
     def sql_string(self, order_by=None, limit=None, **kws):
-        keywords = self.conditions(**kws)
-        sql = "SELECT * FROM %s WHERE %s" % (self.model.db_table, keywords)
+        sql = "SELECT * FROM %s %s" % (self.model.db_table, self.conditions(**kws))
         if order_by is not None:
             if order_by in self.model.fields:
                 sql += f' ORDER BY {order_by}'
@@ -41,7 +41,7 @@ class BaseList:
         return sql
 
     def all(self):
-        pass
+        return self.filter()
 
     def get(self, **kws):
         res = self.filter(**kws)
