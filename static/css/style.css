@@ -39,7 +39,7 @@ body {
     max-width: 1200px;
     margin: auto;
     background-color: #f6f0df;
-    background-image: url("../imgs/airport.png");
+    background-image: url("/static/imgs/airport.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -160,6 +160,7 @@ section img {
 #login_dialog input {
     font-family: 'VT323', monospace;
     font-size: 30px;
+    width: 298px;
 }
 
 #login_dialog button {
