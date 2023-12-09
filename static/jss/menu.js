@@ -308,7 +308,7 @@ const menu_items = [
             fetch('/store')
               .then(response => response.json())
               .then(data => {
-                const user_info = document.querySelector('#user_info'); // 假设您有一个显示用户信息的元素
+                const user_info = document.querySelector('#user_info');
                 user_info.innerHTML = `Current user: ${data.user.name}, balance: ${data.user.balance}`;
               });
           }
