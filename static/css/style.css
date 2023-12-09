@@ -9,8 +9,11 @@
 
 h1 {
     font-family: 'Silkscreen', sans-serif;
-    font-size: 50px;
+    font-size: 60px;
     text-align: center;
+    color: white;
+    background-color: #46c0a6;
+    padding: 10px;
 }
 
 *, *:before, *:after {
@@ -35,6 +38,11 @@ body {
 header {
     font-size: 35px;
     background-color: #46c0a6;
+
+}
+
+nav {
+text-align: center;
 }
 
 nav button {
@@ -42,6 +50,8 @@ nav button {
     color: #ffffff;
     border: 3px #eef3ea solid;
     font-family: 'Silkscreen', sans-serif;
+    margin-right: 20px;
+
 }
 
 nav button:hover {
@@ -119,8 +129,7 @@ section img {
 }
 
 #login_dialog {
-    top: 200px;
-    left: 200px;
+    margin:auto;
     border: solid 5px #f8f3ea;
     border-radius: 10px;
     padding: 20px;
