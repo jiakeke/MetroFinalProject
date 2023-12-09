@@ -44,14 +44,17 @@ nav button:hover {
 }
 
 section dialog {
-    width: 60%;
-    height: 400px;
+    width: 800px;
+    height: 600px;
     top: 100px;
     left: 200px;
+    border: solid #46c0a6 10px;
+    border-radius: 10px;
+     background-color: rgba(255, 247, 239, 0.8);
 }
 
 section img {
-    width: 40%;
+    width: 90%;
     height: auto;
     display: flex;
     justify-content: center;
@@ -63,7 +66,6 @@ section img {
 #game_section {
     background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
     border: 5px #eef3ea solid;
-    border-radius: 10px;
     color: #024770;
     font-family: 'VT323', monospace;
     font-size: 30px;
@@ -73,7 +75,6 @@ section img {
 #store_section {
     background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
     border: 5px #eef3ea solid;
-    border-radius: 10px;
     color: #024770;
     font-family: 'VT323', monospace;
     font-size: 30px;
@@ -81,9 +82,7 @@ section img {
 }
 
 .plane {
-    width: 30%;
-    display: flex;
-    flex-wrap: wrap;
+
 }
 
 #user_info {
@@ -96,7 +95,6 @@ section img {
 #gallery_section {
     background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
     border: 5px #eef3ea solid;
-    border-radius: 10px;
     color: #024770;
     font-family: 'VT323', monospace;
     font-size: 30px;
@@ -108,7 +106,6 @@ section img {
 #ranking_section {
     background: linear-gradient(to bottom, #c0f1a0, #e5f3ed);
     border: 5px #eef3ea solid;
-    border-radius: 10px;
     color: #024770;
     font-family: 'VT323', monospace;
     font-size: 30px;
@@ -195,10 +192,11 @@ button.selected {
 
 #game_report {
     position: absolute;
-    background-color: #EFEFEF;
-    left: 400px;
-    top: 400px;
-    border: solid 1px black;
-    padding: 5px;
+    background-color: #ffe26a;
+    left: 200px;
+    top: 200px;
+    border: solid 3px #d5790c;
+    border-radius: 10px;
+    padding: 50px;
 
 }
