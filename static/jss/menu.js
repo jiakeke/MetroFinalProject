@@ -310,7 +310,7 @@ const menu_items = [
             fetch('/store')
               .then(response => response.json())
               .then(data => {
-                const user_info = document.querySelector('#user_info'); // 假设您有一个显示用户信息的元素
+                const user_info = document.querySelector('#user_info');
                 user_info.innerHTML = `Current user: ${data.user.name}, balance: ${data.user.balance}`;
               });
           }
@@ -350,7 +350,7 @@ const menu_items = [
             })
             planeDiv.innerHTML = `
                 <h3>${plane.name}</h3>
-                <p>Range: ${plane.flight_range}, Price: ${plane.price}</p>
+                <p>Range: ${plane.flight_range}, Capacity: ${plane.passenger}, Price: ${plane.price}</p>
             `;
 
             planeDiv.appendChild(showImageButton);
@@ -394,7 +394,7 @@ const menu_items = [
                 })
                 planeDiv.innerHTML = `
                 <h3>${plane.name}</h3>
-                <p>Range: ${plane.flight_range}, Price: ${plane.price}</p>
+                <p>Range: ${plane.flight_range}, Capacity: ${plane.passenger}, Price: ${plane.price}</p>
             `;
 
                 planeDiv.appendChild(showImageButton)

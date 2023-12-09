@@ -177,6 +177,52 @@ def game_play():
 
     return context
 
+@app.route("/store")
+@jwt_required()
+def store():
+    user = User.objects.get(name=get_jwt_identity())
+    planes = Plane.objects.filter()
+    user_data = {
+        "id": user.id,
+        "name": user.name,
+        "balance": user.balance
+    }
+    planes_data = [plane.Json for plane in planes]
+    return {"user": user_data, "planes": planes_data}
+
+@app.route("/store/buy/<plane_id>", methods=["POST"])
+@jwt_required()
+def buy_plane(plane_id):
+    user = User.objects.get(name=get_jwt_identity())
+    plane = Plane.objects.get(id=plane_id)
+
+    if len(User_X_Plane.objects.filter(user_id=user.id, aircraft_id=plane.id)) > 0:
+        return {"status": "failure", "message": "You already own this plane."}
+
+    if user.balance >= plane.price:
+        user.balance -= plane.price
+        User.objects.update(user.id, balance=user.balance)
+
+        User_X_Plane.objects.create(user_id=user.id, aircraft_id=plane.id)
+
+        return {"status": "success", "message": "Plane purchased successfully."}
+    else:
+        return {"status": "failure", "message": "Insufficient balance."}
+
+@app.route("/gallery")
+@jwt_required()
+def gallery():
+    user = User.objects.get(name=get_jwt_identity())
+    planes = User_X_Plane.objects.filter(user_id=user.id)
+    user_data = {
+        "id": user.id,
+        "name": user.name
+    }
+    planes_data = [
+        plane.plane.Json
+        for plane in planes
+    ]
+    return {"user": user_data, "planes": planes_data}
 
 
 @app.route("/ranking")
@@ -261,54 +307,6 @@ def login():
     set_access_cookies(response, access_token)
     set_refresh_cookies(response, refresh_token)
     return response
-
-@app.route("/store")
-@jwt_required()
-def store():
-    user = User.objects.get(name=get_jwt_identity())
-    planes = Plane.objects.filter()
-    user_data = {
-        "id": user.id,
-        "name": user.name,
-        "balance": user.balance
-    }
-    planes_data = [plane.Json for plane in planes]
-    return {"user": user_data, "planes": planes_data}
-
-@app.route("/store/buy/<plane_id>", methods=["POST"])
-@jwt_required()
-def buy_plane(plane_id):
-    user = User.objects.get(name=get_jwt_identity())
-    plane = Plane.objects.get(id=plane_id)
-
-    if len(User_X_Plane.objects.filter(user_id=user.id, aircraft_id=plane.id)) > 0:
-        return {"status": "failure", "message": "You already own this plane."}
-
-    if user.balance >= plane.price:
-        user.balance -= plane.price
-        User.objects.update(user.id, balance=user.balance)
-
-        User_X_Plane.objects.create(user_id=user.id, aircraft_id=plane.id)
-
-        return {"status": "success", "message": "Plane purchased successfully."}
-    else:
-        return {"status": "failure", "message": "Insufficient balance."}
-
-@app.route("/gallery")
-@jwt_required()
-def gallery():
-    user = User.objects.get(name=get_jwt_identity())
-    planes = User_X_Plane.objects.filter(user_id=user.id)
-    user_data = {
-        "id": user.id,
-        "name": user.name
-    }
-    planes_data = [
-        plane.plane.Json
-        for plane in planes
-    ]
-    return {"user": user_data, "planes": planes_data}
-
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
