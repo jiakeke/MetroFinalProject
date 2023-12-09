@@ -348,7 +348,7 @@ const menu_items = [
             })
             planeDiv.innerHTML = `
                 <h3>${plane.name}</h3>
-                <p>Range: ${plane.flight_range}, Price: ${plane.price}</p>
+                <p>Range: ${plane.flight_range}, Capacity: ${plane.passenger}, Price: ${plane.price}</p>
             `;
 
             planeDiv.appendChild(showImageButton);
@@ -390,7 +390,7 @@ const menu_items = [
                 })
                 planeDiv.innerHTML = `
                 <h3>${plane.name}</h3>
-                <p>Range: ${plane.flight_range}, Price: ${plane.price}</p>
+                <p>Range: ${plane.flight_range}, Capacity: ${plane.passenger}, Price: ${plane.price}</p>
             `;
 
                 planeDiv.appendChild(showImageButton)
