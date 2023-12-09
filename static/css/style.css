@@ -7,6 +7,12 @@
 }
 
 
+h1 {
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 50px;
+    text-align: center;
+}
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -15,7 +21,7 @@ body {
     max-width: 1200px;
     margin: auto;
     background-color: #f6f0df;
-    background-image: url("airport.png");
+    background-image: url("../imgs/airport.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -115,7 +121,7 @@ section img {
 #login_dialog {
     top: 200px;
     left: 200px;
-    border: solid 5px #ffe26a;
+    border: solid 5px #f8f3ea;
     border-radius: 10px;
     padding: 20px;
     font-family: 'VT323', monospace;
