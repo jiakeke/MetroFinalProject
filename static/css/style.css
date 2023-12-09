@@ -215,7 +215,8 @@ input#login {
 }
 
 button.selected {
-    border-bottom: solid 1px #EFEFEF;
+    background-color: #ffe26a;
+    color: #16123f;
 }
 
 .channel {

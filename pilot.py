@@ -46,7 +46,7 @@ app = Flask(__name__)
 def get_weather_index(latitude):
     weather_setting = {
         1: ('Normal', 1.0),
-        2: ('Great Weather', 0.9),
+        2: ('Great', 0.9),
         3: ('Heavy Rain', 1.1),
         4: ('Blizzard', 1.3),
         5: ('Snow', 1.2),
