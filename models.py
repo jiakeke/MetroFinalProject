@@ -29,11 +29,13 @@ class BaseList:
             conditions = ' WHERE ' + keywords
         return conditions
 
-    def sql_string(self, order_by=None, limit=None, **kws):
+    def sql_string(self, order_by=None, reverse=False, limit=None, **kws):
         sql = "SELECT * FROM %s %s" % (self.model.db_table, self.conditions(**kws))
         if order_by is not None:
             if order_by in self.model.fields:
                 sql += f' ORDER BY {order_by}'
+                if reverse:
+                    sql += ' DESC'
             elif order_by == 'random':
                 sql += f' ORDER BY RAND()'
 
@@ -180,6 +182,14 @@ class User(Base):
     def max_range(self):
         props = [plane.plane.flight_range for plane in self.planes]
         return max(props)
+
+    @property
+    def Ranking(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'amount': self.total_amount,
+        }
 
     def get_user_props():
         """
@@ -357,11 +367,8 @@ class Task(Base):
         return result
 
 
-class TaskList(BaseList):
-    pass
 
-
-register_class(Task, TaskList)
+register_class(Task)
 
 if __name__ == '__main__':
     pass

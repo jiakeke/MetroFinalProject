@@ -116,7 +116,9 @@ const menu_items = [
                     innerHTML: 'Launch',
                 }
             )
+
             flight_form.appendChild(launch);
+
             launch.addEventListener(
                 'click',
                 async function game_play(event) {
@@ -213,7 +215,7 @@ const menu_items = [
                                 setTimeout(flying, 300);
                             }
 
-                        }
+                        } // function flying end
                         // Show Map Dialog
                         game_dialog.showModal();
                         flying();
@@ -282,10 +284,10 @@ const menu_items = [
                         // Report end
 
                     }
-                }
+                } // game_play end
             );
 
-        },
+        }, // game_render end
     },
     {
         id: 'store',
@@ -363,8 +365,10 @@ const menu_items = [
         method: null,
         render: async function gallery_render() {
             // Here is the function to render the gallery channelel
-            const response = await fetch('/gallery', {method:
-            'GET'},);
+            const response = await fetch('/gallery', {
+                    method: 'GET'
+                }
+            );
             const result = await response.json()
             const gallery_section = document.querySelector('#gallery_section');
             gallery_section.innerHTML = '';
@@ -397,7 +401,7 @@ const menu_items = [
                 gallery_section.appendChild(planeDiv)
 
             })
-        },
+        }, // gallery_render end
     },
     {
         id: 'ranking',
@@ -405,7 +409,57 @@ const menu_items = [
         method: null,
         render: async function ranking_render() {
             // Here is the function to render the ranking channelel
-        },
+            const response = await fetch('/ranking', {
+                    method: 'GET'
+                }
+            );
+            const result = await response.json()
+            const ranking_section = document.querySelector('#ranking_section');
+            ranking_section.innerHTML = '';
+
+            const ranking_table = Object.assign(
+                document.createElement('div'),
+                {
+                    id: 'ranking_table',
+                    className: 'div_table',
+                }
+            );
+
+            ranking_section.appendChild(ranking_table);
+
+            ranking_table.appendChild(
+                Object.assign(
+                    document.createElement('div'),
+                    {
+                        className: 'heading',
+                        innerHTML: `
+                            <div class="cell">Ranking</div>
+                            <div class="cell">Name</div>
+                            <div class="cell">Total Amount</div>
+                        `,
+
+                    }
+                )
+            );
+            for (let i=0; i<result.users.length; i++) {
+                ranking_table.appendChild(
+                    Object.assign(
+                        document.createElement('div'),
+                        {
+                            className: `row ${result.current_user_id==result.users[i].id? 'highlight': ''}`,
+                            innerHTML: `
+                                <div class="cell">${i+1}</div>
+                                <div class="cell">${result.users[i].name}</div>
+                                <div class="cell">${result.users[i].amount}</div>
+                            `,
+
+                        }
+                    )
+                );
+
+            }
+
+        }, // ranking_render end
     },
     {
         id: 'logout',

@@ -141,6 +141,10 @@ def get_map(task):
 
 #========================= Flask API View  ==================================
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 @app.route("/game")
 @jwt_required()
@@ -174,9 +178,19 @@ def game_play():
     return context
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+
+@app.route("/ranking")
+@jwt_required()
+def ranking():
+    current_user = User.objects.get(name=get_jwt_identity())
+    users = User.objects.filter(order_by='total_amount', reverse=True)
+    context = {
+        'current_user_id': current_user.id,
+        'users': [user.Ranking for user in users],
+    }
+
+    return context
+
 
 #-------------------------- Auth API ------------------------------------
 

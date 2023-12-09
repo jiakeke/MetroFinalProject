@@ -238,3 +238,32 @@ button.selected {
 button {
     cursor: pointer;
 }
+
+.div_table {
+    display: table;
+    width: 100%;
+
+}
+
+.div_table .heading {
+    display: table-header-group;
+    background-color: #46c0a6;
+    color: #ffffff;
+}
+
+.div_table .row {
+    display: table-row;
+    border: solid 1px white;
+}
+
+
+.div_table .cell {
+    padding: 5px;
+    display: table-cell;
+    border: solid 1px white;
+}
+
+.div_table .highlight {
+    background-color: #ffe26a;
+    color: #16123f;
+}
