@@ -66,7 +66,7 @@ section dialog {
     left: 200px;
     border: solid #46c0a6 10px;
     border-radius: 10px;
-     background-color: rgba(255, 247, 239, 0.8);
+    background-color: rgba(255, 247, 239, 0.8);
 }
 
 section img {
@@ -132,11 +132,10 @@ section img {
     margin:auto;
     border: solid 5px #f8f3ea;
     border-radius: 10px;
-    padding: 20px;
+    padding: 50px;
     font-family: 'VT323', monospace;
     font-size: 30px;
-    background-color: #c0f1a0;
-
+    background-color: rgba(221, 245, 160, 0.8);
 }
 
 #login_dialog input {
