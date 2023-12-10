@@ -58,6 +58,7 @@ const menu_items = [
                     document.createElement('div'),
                     {
                         id: 'planes',
+                        className: 'planes',
                     }
                 )
             );
@@ -339,6 +340,9 @@ const menu_items = [
                 user_info.innerHTML = `Current user: ${data.user.name}, balance: ${data.user.balance}`;
               });
           }
+          const planesDiv = document.createElement('div');
+          planesDiv.className = 'planes';
+          store_section.appendChild(planesDiv);
 
           result.planes.forEach(plane => {
             const planeDiv = document.createElement('div');
@@ -380,7 +384,7 @@ const menu_items = [
 
             planeDiv.appendChild(showImageButton);
             planeDiv.appendChild(buyButton);
-            store_section.appendChild(planeDiv);
+            planesDiv.appendChild(planeDiv);
           });
         },
     },
@@ -397,6 +401,11 @@ const menu_items = [
             const result = await response.json()
             const gallery_section = document.querySelector('#gallery_section');
             gallery_section.innerHTML = '';
+
+            const planes2Div = document.createElement('div');
+            planes2Div.className = 'planes';
+            gallery_section.appendChild(planes2Div);
+
             result.planes.forEach(plane => {
                 const planeDiv = document.createElement('div');
                 planeDiv.className = 'plane';
@@ -423,7 +432,7 @@ const menu_items = [
             `;
 
                 planeDiv.appendChild(showImageButton)
-                gallery_section.appendChild(planeDiv)
+                planes2Div.appendChild(planeDiv)
 
             })
         }, // gallery_render end
