@@ -84,24 +84,29 @@ const menu_items = [
 
                 plane_div.appendChild(
                     Object.assign(
-                        document.createElement('input'),
+                        document.createElement('div'),
                         {
-                            id: `plane_${i}`,
-                            type: 'radio',
-                            name: 'plane',
-                            required: true,
-                            value: planes[i].id,
+                            innerHTML: `<input type="radio" name="plane" value="${planes[i].id}" id="plane_${i}" required="required">`,
                         }
                     )
                 );
 
                 plane_div.appendChild(
                     Object.assign(
-                        document.createElement('span'),
+                        document.createElement('div'),
+                        {
+                            innerHTML: `<img src="${planes[i].img}" alt="${planes[i].name}">`,
+                        }
+                    )
+                );
+
+                plane_div.appendChild(
+                    Object.assign(
+                        document.createElement('div'),
                         {
                             innerHTML: 
-                                `${planes[i].name} - 
-                                Range: ${planes[i].flight_range} - 
+                                `${planes[i].name} <br> 
+                                Range: ${planes[i].flight_range} <br> 
                                 Capacity: ${planes[i].passenger}`
                         }
                     )
@@ -109,11 +114,11 @@ const menu_items = [
 
             }
             const launch = Object.assign(
-                document.createElement('button'),
+                document.createElement('div'),
                 {
-                    id: 'launch',
-                    type: 'button',
-                    innerHTML: 'Launch',
+                    id: 'plane',
+                    className: 'plane',
+                    innerHTML: '<button type="button">Launch</button>',
                 }
             )
 
@@ -171,6 +176,26 @@ const menu_items = [
                         }
                         //Drawing line end
                         */
+                        game_dialog.appendChild(
+                            Object.assign(
+                                document.createElement('span'),
+                                {
+                                    id: 'starting',
+                                    style: `position: absolute; left: ${ax}px; top: ${ay}px`,
+                                    innerHTML: `${result.map_info[3]}`,
+                                }
+                            )
+                        );
+                        game_dialog.appendChild(
+                            Object.assign(
+                                document.createElement('span'),
+                                {
+                                    id: 'ending',
+                                    style: `position: absolute; left: ${bx}px; top: ${by}px`,
+                                    innerHTML: `${result.map_info[4]}`,
+                                }
+                            )
+                        );
                         const plane_img = Object.assign(
                             document.createElement('img'),
                             {

@@ -116,8 +116,31 @@ section img {
     padding: 12px;
 }
 
-.plane {
+div#planes {
+    display: block;
+    min-height: 100%;
+    display: table;
+    content: "";
+    clear: both
+}
 
+div.plane {
+    margin-top: 40px;
+}
+div.plane {
+    float: left;
+    width: 500px;
+}
+
+div.plane div {
+    float: left;
+    height: 100%;
+    margin-right: 50px;
+}
+
+div.plane div img {
+    width: 100px;
+    height: 100px;
 }
 
 #user_info {
@@ -199,6 +222,12 @@ div button:hover {
 #game_dialog#game_preview {
     width: 1024px;
     height: 768px;
+}
+
+#game_dialog span {
+    color: #46c0a6;
+    background: #efefef;
+    padding: 5px;
 }
 
 

@@ -137,7 +137,11 @@ def get_map(task):
     by_px = round((cy - by)/px_y + 384)
 
     print(ax_px, bx_px)
-    return url, (ax_px, ay_px), (bx_px, by_px)
+    return (
+        url,
+        (ax_px, ay_px), (bx_px, by_px),
+        task.departure.name, task.destination.name
+    )
 
 #========================= Flask API View  ==================================
 
