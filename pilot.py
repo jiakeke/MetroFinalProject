@@ -136,7 +136,6 @@ def get_map(task):
     bx_px = round((bx - cx)/px_x + 512)
     by_px = round((cy - by)/px_y + 384)
 
-    print(ax_px, bx_px)
     return (
         url,
         (ax_px, ay_px), (bx_px, by_px),
@@ -177,7 +176,6 @@ def game_play():
         'map_info': get_map(task),
         'report': task.play(plane),
     }
-    print(context['report'])
 
     return context
 
@@ -300,10 +298,13 @@ def login():
 
     user = exist_users[0]
 
-    print(password, user.password)
-    is_valid = bcrypt.check_password_hash(user.password, password)
-    if not is_valid:
-        return {"msg": "Wrong username or password."}, 401
+    if user.password == password:
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        User.objects.update(user.id, password=hashed_password)
+    else:
+        is_valid = bcrypt.check_password_hash(user.password, password)
+        if not is_valid:
+            return {"msg": "Wrong username or password."}, 401
 
     access_token = create_access_token(identity=username)
     refresh_token = create_refresh_token(identity=username)

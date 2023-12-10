@@ -44,17 +44,6 @@ class BaseList:
 
         return sql
 
-    def all(self):
-        return self.filter()
-
-    def get(self, **kws):
-        res = self.filter(**kws)
-        return res and res[0] or None
-
-    def count(self, **kws):
-        pass
-
-
     def filter(self, **kws):
         sql = self.sql_string(**kws)
         print(sql)
@@ -107,6 +96,16 @@ class BaseList:
         cursor = connection.cursor()
         cursor.execute(sql)
         connection.commit()
+
+    def all(self):
+        return self.filter()
+
+    def get(self, **kws):
+        res = self.filter(**kws)
+        return res and res[0] or None
+
+    def count(self, **kws):
+        pass
 
     def delete(self, **kws):
         pass
