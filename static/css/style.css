@@ -77,8 +77,6 @@ nav button:hover {
 section dialog {
     width: 800px;
     height: 600px;
-    top: 100px;
-    left: 200px;
     border: solid #46c0a6 10px;
     border-radius: 10px;
     background-color: rgba(255, 247, 239, 0.8);
@@ -114,6 +112,10 @@ section img {
     font-family: 'VT323', monospace;
     font-size: 30px;
     padding: 12px;
+}
+
+#store_section dialog {
+    margin:auto;
 }
 
 div.planes {
@@ -165,6 +167,10 @@ div.plane div img:hover {
     font-family: 'VT323', monospace;
     font-size: 30px;
     padding: 12px;
+}
+
+#gallery_section dialog {
+    margin:auto;
 }
 
 
