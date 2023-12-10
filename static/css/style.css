@@ -126,10 +126,14 @@ div.planes {
 
 div.plane {
     margin-top: 40px;
-}
-div.plane {
     float: left;
-    width: 500px;
+    width: 510px;
+    height: 120px;
+    padding: 5px;
+}
+
+div.plane:hover {
+    background: #46c0a6;
 }
 
 div.plane div {
