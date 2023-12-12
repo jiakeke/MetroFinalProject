@@ -183,11 +183,23 @@ class User(Base):
         return max(props)
 
     @property
+    def Carbon_efficiency(self):
+        amount = self.total_amount
+        emission = self.carbon_emission
+        efficiency = 0
+        if emission > 0:
+            efficiency = amount/emission
+        return round(efficiency, 2)
+
+
+    @property
     def Ranking(self):
         return {
             'id': self.id,
             'name': self.name,
             'amount': self.total_amount,
+            'emission': self.carbon_emission,
+            'efficiency': self.Carbon_efficiency,
         }
 
     def get_user_props():

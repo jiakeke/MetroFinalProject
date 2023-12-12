@@ -232,6 +232,7 @@ def gallery():
 def ranking():
     current_user = User.objects.get(name=get_jwt_identity())
     users = User.objects.filter(order_by='total_amount', reverse=True)
+    users.sort(key=lambda x: x.Carbon_efficiency, reverse=True)
     context = {
         'current_user_id': current_user.id,
         'users': [user.Ranking for user in users],

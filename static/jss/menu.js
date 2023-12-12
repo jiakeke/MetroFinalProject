@@ -46,7 +46,12 @@ const menu_items = [
                     document.createElement('div'),
                     {
                         id: 'tips',
-                        innerHTML: 'Tips:<br>Destination weather may affect flight costs.<br> Refuel cost is 50 coins each time.',
+                        innerHTML: 'Tips:<br>Game coins come from saving Carbon ' +
+                            'Emission, and remember, better planes have ' +
+                            'better Carbon Emission Efficiency. Let’s help ' +
+                            'save the earth together!<br>Destination ' +
+                            'weather may affect flight costs.<br> Refuel ' +
+                            'cost is 50 coins each time.',
                     }
                 )
             );
@@ -459,6 +464,16 @@ const menu_items = [
                 }
             );
 
+            ranking_section.appendChild(
+                Object.assign(
+                    document.createElement('h3'),
+                    {
+                        className: 'heading',
+                        innerHTML: '<br>Tip: Carbon Efficiency = Total Amount / Carbon Emission</h3><br><br>',
+
+                    }
+                )
+            );
             ranking_section.appendChild(ranking_table);
 
             ranking_table.appendChild(
@@ -470,6 +485,8 @@ const menu_items = [
                             <div class="cell">Ranking</div>
                             <div class="cell">Name</div>
                             <div class="cell">Total Amount</div>
+                            <div class="cell">Carbon Emission</div>
+                            <div class="cell">Carbon Efficiency↓</div>
                         `,
 
                     }
@@ -482,9 +499,11 @@ const menu_items = [
                         {
                             className: `row ${result.current_user_id==result.users[i].id? 'highlight': ''}`,
                             innerHTML: `
-                                <div class="cell">${i+1}</div>
-                                <div class="cell">${result.users[i].name}</div>
-                                <div class="cell">${result.users[i].amount}</div>
+                              <div class="cell">${i+1}</div>
+                              <div class="cell">${result.users[i].name}</div>
+                              <div class="cell">${result.users[i].amount}</div>
+                              <div class="cell">${result.users[i].emission}</div>
+                              <div class="cell">${result.users[i].efficiency}</div>
                             `,
 
                         }
